@@ -466,6 +466,32 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-b); mi
 }
 
 
+
+/* iOS touch fix */
+[onclick], [ontouchstart], .nav-item, .tab, .chat-quick-btn, 
+.day-cell, .cal-day, .btn, button, .wn-btn, .avail-day,
+.log-item button, .comp-card button {
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: rgba(0,0,0,0.1);
+}
+button { 
+  background: none; 
+  border: none; 
+  font-family: inherit;
+  -webkit-appearance: none;
+}
+.nav-item {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  border-left: 2px solid transparent;
+  font-family: inherit;
+}
+
 /* iOS Safari fixes */
 * { -webkit-text-size-adjust: 100%; }
 input, select, textarea { font-size: 16px !important; } /* prevent zoom on focus */
@@ -476,7 +502,7 @@ input, select, textarea { font-size: 16px !important; } /* prevent zoom on focus
 <body>
 
 <div class="shell">
-  <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+  <div class="sidebar-overlay" id="sidebar-overlay" ontouchstart="" onclick="closeSidebar()"></div>
 
   <!-- SIDEBAR -->
   <aside class="sidebar" id="sidebar">
@@ -491,63 +517,63 @@ input, select, textarea { font-size: 16px !important; } /* prevent zoom on focus
     </div>
     <nav class="sidebar-nav">
       <div class="nav-section">Inicio</div>
-      <div class="nav-item active" data-sec="dashboard" onclick="nav(this)">
+      <button class="nav-item active" data-sec="dashboard" onclick="nav(this)">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1" stroke-width="1.5"/><rect x="14" y="3" width="7" height="7" rx="1" stroke-width="1.5"/><rect x="3" y="14" width="7" height="7" rx="1" stroke-width="1.5"/><rect x="14" y="14" width="7" height="7" rx="1" stroke-width="1.5"/></svg>
         Dashboard
       </div>
-      <div class="nav-item" data-sec="estado" onclick="nav(this)">
+      <button class="nav-item" data-sec="estado" onclick="nav(this)">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
         Estado de forma
       </div>
       <div class="nav-section">Entrenamiento</div>
-      <div class="nav-item" data-sec="plan" onclick="nav(this)">
+      <button class="nav-item" data-sec="plan" onclick="nav(this)">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" stroke-width="1.5"/><path d="M16 2v4M8 2v4M3 10h18" stroke-width="1.5" stroke-linecap="round"/></svg>
         Plan semanal
       </div>
-      <div class="nav-item" data-sec="calendar" onclick="nav(this)">
+      <button class="nav-item" data-sec="calendar" onclick="nav(this)">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" stroke-width="1.5"/><path d="M16 2v4M8 2v4M3 10h18" stroke-width="1.5" stroke-linecap="round"/><circle cx="8" cy="16" r="1.5" fill="currentColor"/><circle cx="12" cy="16" r="1.5" fill="currentColor"/></svg>
         Calendario
       </div>
-      <div class="nav-item" data-sec="registro" onclick="nav(this)">
+      <button class="nav-item" data-sec="registro" onclick="nav(this)">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke-width="1.5"/><path d="M12 8v4l3 3" stroke-width="1.5" stroke-linecap="round"/></svg>
         Registrar sesión
       </div>
-      <div class="nav-item" data-sec="disponibilidad" onclick="nav(this)">
+      <button class="nav-item" data-sec="disponibilidad" onclick="nav(this)">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" stroke-width="1.5"/><path d="M16 2v4M8 2v4M3 10h18" stroke-width="1.5" stroke-linecap="round"/><path d="M8 15l2 2 4-4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
         Disponibilidad
       </div>
       <div class="nav-section">Análisis</div>
-      <div class="nav-item" data-sec="progresion" onclick="nav(this)">
+      <button class="nav-item" data-sec="progresion" onclick="nav(this)">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
         Progresión
       </div>
-      <div class="nav-item" data-sec="performance" onclick="nav(this)">
+      <button class="nav-item" data-sec="performance" onclick="nav(this)">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke-width="1.5"/><path d="M12 6v6l4 2" stroke-width="1.5" stroke-linecap="round"/></svg>
         Rendimiento
       </div>
-      <div class="nav-item" data-sec="sueno" onclick="nav(this)">
+      <button class="nav-item" data-sec="sueno" onclick="nav(this)">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke-width="1.5"/></svg>
         Sueño
       </div>
       <div class="nav-section">Competición</div>
-      <div class="nav-item" data-sec="competiciones" onclick="nav(this)">
+      <button class="nav-item" data-sec="competiciones" onclick="nav(this)">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" stroke-width="1.5" stroke-linecap="round"/></svg>
         Competiciones
       </div>
-      <div class="nav-item" data-sec="nutricion" onclick="nav(this)">
+      <button class="nav-item" data-sec="nutricion" onclick="nav(this)">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 7-7z" stroke-width="1.5"/></svg>
         Nutrición
       </div>
       <div class="nav-section">Asistente</div>
-      <div class="nav-item" data-sec="asistente" onclick="nav(this)">
+      <button class="nav-item" data-sec="asistente" onclick="nav(this)">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke-width="1.5"/></svg>
         Asistente IA
       </div>
-      <div class="nav-item" data-sec="telegram" onclick="nav(this)">
+      <button class="nav-item" data-sec="telegram" onclick="nav(this)">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 5L2 12.5l7 1M21 5l-4.5 15L9 13.5M21 5L9 13.5m0 0V19l3-2.5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
         Telegram
       </div>
-      <div class="nav-item" data-sec="config" onclick="nav(this)">
+      <button class="nav-item" data-sec="config" onclick="nav(this)">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" stroke-width="1.5"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" stroke-width="1.5"/></svg>
         Configuración
       </div>
@@ -747,11 +773,11 @@ input, select, textarea { font-size: 16px !important; } /* prevent zoom on focus
     <!-- PROGRESIÓN -->
     <div class="section" id="sec-progresion">
       <div class="page-header"><h1>Progresión</h1><p>Evolución semana a semana.</p></div>
-      <div class="tabs">
-        <div class="tab active" onclick="switchProgTab('volumen',this)">Volumen</div>
-        <div class="tab" onclick="switchProgTab('historial',this)">Historial</div>
-        <div class="tab" onclick="switchProgTab('fases',this)">Fases</div>
-        <div class="tab" onclick="switchProgTab('cuerpo',this)">Cuerpo</div>
+      <div class="tabs" role="button" tabindex="0">
+        <div class="tab active" ontouchstart="" onclick="switchProgTab('volumen',this)" role="button" tabindex="0">Volumen</div>
+        <div class="tab" ontouchstart="" onclick="switchProgTab('historial',this)" role="button" tabindex="0">Historial</div>
+        <div class="tab" ontouchstart="" onclick="switchProgTab('fases',this)" role="button" tabindex="0">Fases</div>
+        <div class="tab" ontouchstart="" onclick="switchProgTab('cuerpo',this)" role="button" tabindex="0">Cuerpo</div>
       </div>
       <div id="prog-volumen">
         <div class="card">
@@ -834,11 +860,11 @@ input, select, textarea { font-size: 16px !important; } /* prevent zoom on focus
     <!-- NUTRICIÓN -->
     <div class="section" id="sec-nutricion">
       <div class="page-header"><h1>Nutrición</h1><p>Plan orientativo según tu carga de entrenamiento.</p></div>
-      <div class="tabs">
-        <div class="tab active" onclick="switchNutriTab('plan',this)">Hoy</div>
-        <div class="tab" onclick="switchNutriTab('semana',this)">Semana</div>
-        <div class="tab" onclick="switchNutriTab('carrera',this)">Race day</div>
-        <div class="tab" onclick="switchNutriTab('perfil',this)">Perfil</div>
+      <div class="tabs" role="button" tabindex="0">
+        <div class="tab active" ontouchstart="" onclick="switchNutriTab('plan',this)" role="button" tabindex="0">Hoy</div>
+        <div class="tab" ontouchstart="" onclick="switchNutriTab('semana',this)" role="button" tabindex="0">Semana</div>
+        <div class="tab" ontouchstart="" onclick="switchNutriTab('carrera',this)" role="button" tabindex="0">Race day</div>
+        <div class="tab" ontouchstart="" onclick="switchNutriTab('perfil',this)" role="button" tabindex="0">Perfil</div>
       </div>
       <div id="nutri-plan"><div class="card"><div class="card-body" id="nutri-plan-body"></div></div></div>
       <div id="nutri-semana" style="display:none"><div class="card"><div class="card-body" id="nutri-semana-body"></div></div></div>
@@ -857,12 +883,12 @@ input, select, textarea { font-size: 16px !important; } /* prevent zoom on focus
     <div class="section" id="sec-asistente">
       <div class="page-header"><h1>Asistente IA</h1><p>Pregunta en lenguaje natural sobre tu entrenamiento.</p></div>
       <div class="chat-quick" id="chat-quick-btns">
-        <div class="chat-quick-btn" onclick="quickChat('¿Cómo está mi forma física esta semana?')">¿Mi forma?</div>
-        <div class="chat-quick-btn" onclick="quickChat('¿Qué debería entrenar mañana?')">Mañana</div>
-        <div class="chat-quick-btn" onclick="quickChat('¿Cómo puedo mejorar mi VO2max?')">VO2max</div>
-        <div class="chat-quick-btn" onclick="quickChat('Dame un análisis de mis últimas 2 semanas')">Análisis</div>
-        <div class="chat-quick-btn" onclick="quickChat('¿Qué puntos debo mejorar para el Ironman?')">Ironman tips</div>
-        <div class="chat-quick-btn" onclick="quickChat('Dame una sesión de fuerza para hacer hoy')">Fuerza hoy</div>
+        <div class="chat-quick-btn" ontouchstart="" onclick="quickChat('¿Cómo está mi forma física esta semana?')" role="button" tabindex="0">¿Mi forma?</div>
+        <div class="chat-quick-btn" ontouchstart="" onclick="quickChat('¿Qué debería entrenar mañana?')" role="button" tabindex="0">Mañana</div>
+        <div class="chat-quick-btn" ontouchstart="" onclick="quickChat('¿Cómo puedo mejorar mi VO2max?')" role="button" tabindex="0">VO2max</div>
+        <div class="chat-quick-btn" ontouchstart="" onclick="quickChat('Dame un análisis de mis últimas 2 semanas')" role="button" tabindex="0">Análisis</div>
+        <div class="chat-quick-btn" ontouchstart="" onclick="quickChat('¿Qué puntos debo mejorar para el Ironman?')" role="button" tabindex="0">Ironman tips</div>
+        <div class="chat-quick-btn" ontouchstart="" onclick="quickChat('Dame una sesión de fuerza para hacer hoy')" role="button" tabindex="0">Fuerza hoy</div>
       </div>
       <div class="card" style="display:flex;flex-direction:column;">
         <div class="card-body" style="flex:1;display:flex;flex-direction:column;">
@@ -908,19 +934,19 @@ input, select, textarea { font-size: 16px !important; } /* prevent zoom on focus
             <div><div class="setting-label">📅 Plan diario</div><div class="setting-sub">Entreno del día cada mañana</div></div>
             <div style="display:flex;align-items:center;gap:10px;">
               <input type="time" id="tg-plan-time" value="07:00" style="background:var(--bg2);border:1.5px solid var(--border2);border-radius:8px;color:var(--text);padding:5px 8px;font-size:13px;font-family:var(--font-m);">
-              <div class="toggle" id="tg-plan-toggle" onclick="toggleTelegram('dailyPlan',this)"><div class="toggle-thumb"></div></div>
+              <div class="toggle" id="tg-plan-toggle" ontouchstart="" onclick="toggleTelegram('dailyPlan',this)"><div class="toggle-thumb"></div></div>
             </div>
           </div>
           <div class="setting-row">
             <div><div class="setting-label">🌅 Resumen matinal</div><div class="setting-sub">FC, VO2max, sueño, pasos</div></div>
             <div style="display:flex;align-items:center;gap:10px;">
               <input type="time" id="tg-stats-time" value="06:30" style="background:var(--bg2);border:1.5px solid var(--border2);border-radius:8px;color:var(--text);padding:5px 8px;font-size:13px;font-family:var(--font-m);">
-              <div class="toggle" id="tg-stats-toggle" onclick="toggleTelegram('morningStats',this)"><div class="toggle-thumb"></div></div>
+              <div class="toggle" id="tg-stats-toggle" ontouchstart="" onclick="toggleTelegram('morningStats',this)"><div class="toggle-thumb"></div></div>
             </div>
           </div>
           <div class="setting-row">
             <div><div class="setting-label">⚠ Alertas del plan</div><div class="setting-sub">Avisos importantes del entrenamiento</div></div>
-            <div><div class="toggle" id="tg-alerts-toggle" onclick="toggleTelegram('alerts',this)"><div class="toggle-thumb"></div></div></div>
+            <div><div class="toggle" id="tg-alerts-toggle" ontouchstart="" onclick="toggleTelegram('alerts',this)"><div class="toggle-thumb"></div></div></div>
           </div>
         </div>
       </div>
@@ -1168,6 +1194,30 @@ input, select, textarea { font-size: 16px !important; } /* prevent zoom on focus
 </div>
 
 <script>
+
+// ── Safe localStorage for iOS ────────────────────────────
+var _memStore = {};
+var _safeStorage = {
+  getItem: function(k) { 
+    try { return localStorage.getItem(k); } 
+    catch(e) { return _memStore[k] || null; }
+  },
+  setItem: function(k, v) { 
+    try { localStorage.setItem(k, v); } 
+    catch(e) { _memStore[k] = v; }
+  },
+  removeItem: function(k) { 
+    try { localStorage.removeItem(k); } 
+    catch(e) { delete _memStore[k]; }
+  }
+};
+// Override localStorage
+try { localStorage.setItem('_test', '1'); localStorage.removeItem('_test'); }
+catch(e) { 
+  console.log('[Aion] localStorage blocked, using memory store');
+  window.localStorage = _safeStorage; 
+}
+
 
 // ═══════════════════════════════════════════════════════════
 // AION ATHLETIC — i18n (CA / ES / EN)
@@ -2712,7 +2762,7 @@ function renderCalendar() {
     const compEmoji = compDay ? `<span class="cal-comp">🏆</span>` : '';
 
     grid.insertAdjacentHTML('beforeend', `
-      <div class="cal-day ${isToday?'today':''}" onclick="showCalDetail('${dateStr}')">
+      <div class="cal-day ${isToday?'today':''}" ontouchstart="" onclick="showCalDetail('${dateStr}')">
         ${compEmoji}
         <div class="cal-num">${d}</div>
         <div class="cal-dots">${dots}</div>
@@ -2818,7 +2868,7 @@ function renderAvailability() {
   grid.innerHTML = DAYS_FULL.map((d,i) => {
     const a = avail[i];
     const sports = a.sports || [];
-    return `<div class="avail-day ${a.canTrain?'':'off'}" onclick="openAvailDayModal(${i})">
+    return `<div class="avail-day ${a.canTrain?'':'off'}" ontouchstart="" onclick="openAvailDayModal(${i})">
       <div class="avail-day-name">${DAYS_ES[i]}</div>
       <div class="avail-day-time">${a.canTrain ? formatDuration(a.maxMin) : 'Libre'}</div>
       <div class="avail-day-sports">${sports.map(s=>SPORTS[s]?.icon||'').join('')}</div>
@@ -2978,7 +3028,7 @@ function renderFases() {
   const road = document.getElementById('phase-road');
   const cur = getPhase(APP.config.currentWeek);
   road.innerHTML = phases.map((p,i) => `
-    <div style="background:var(--bg3);border:1px solid ${p.key===cur?'var(--accent)':'var(--border)'};border-radius:var(--r2);padding:12px;text-align:center;cursor:pointer;${p.key===cur?'background:rgba(59,158,255,0.06)':''}" onclick="selectFase(${i})">
+    <div style="background:var(--bg3);border:1px solid ${p.key===cur?'var(--accent)':'var(--border)'};border-radius:var(--r2);padding:12px;text-align:center;cursor:pointer;${p.key===cur?'background:rgba(59,158,255,0.06)':''}" ontouchstart="" onclick="selectFase(${i})">
       <div style="font-family:var(--font-d);font-size:13px;font-weight:700;color:${p.color}">${p.name}</div>
       <div style="font-size:10px;color:var(--text3)">${p.weeks}</div>
     </div>`).join('');
@@ -4100,6 +4150,25 @@ function getSPORTS() {
 }
 
 // ── Init i18n after app loads ─────────────────────────────
+
+// ── iOS Safari click fix ─────────────────────────────────
+// iOS Safari requires elements to be explicitly marked as clickable
+document.addEventListener('DOMContentLoaded', function() {
+  // Make all elements with onclick work on iOS
+  document.querySelectorAll('[onclick]').forEach(function(el) {
+    el.style.cursor = 'pointer';
+    if (!el.getAttribute('ontouchstart')) {
+      el.setAttribute('ontouchstart', '');
+    }
+  });
+  
+  // Also fix dynamically added elements via event delegation
+  document.body.addEventListener('touchstart', function() {}, {passive: true});
+});
+
+// Prevent 300ms click delay on iOS
+document.addEventListener('touchstart', function() {}, {passive: true});
+
 (function initI18n() {
   refreshLangArrays();
   buildLangSwitcher();
