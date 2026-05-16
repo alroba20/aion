@@ -575,11 +575,52 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Helvetica Ne
     <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" stroke-linecap="round" stroke-linejoin="round"/></svg>
     <span id="bn-prog-l">Progrés</span>
   </button>
-  <button class="bn" id="bn-config" onclick="go('config')">
-    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-    <span id="bn-cfg-l">Config</span>
+  <button class="bn" id="bn-mes" onclick="openMesMenu()">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="19" r="1.5" fill="currentColor"/></svg>
+    <span id="bn-mes-l">Més</span>
   </button>
 </nav>
+
+<!-- MÉS MENU SHEET -->
+<div id="mes-bg" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:150" onclick="closeMesMenu()"></div>
+<div id="mes-sheet" style="display:none;position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:#fff;border-radius:20px 20px 0 0;z-index:151;padding:8px 0 calc(env(safe-area-inset-bottom) + 8px)">
+  <div style="width:36px;height:4px;background:#e0e0e5;border-radius:2px;margin:8px auto 16px"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0">
+    <button onclick="goFromMes('estado')" style="-webkit-appearance:none;background:none;border:none;padding:16px 8px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;font-family:inherit">
+      <div style="width:48px;height:48px;border-radius:14px;background:#fde9e6;display:flex;align-items:center;justify-content:center;font-size:22px">💪</div>
+      <span style="font-size:11px;font-weight:600;color:#1d1d1f" id="mes-estado-l">Estat forma</span>
+    </button>
+    <button onclick="goFromMes('calendar')" style="-webkit-appearance:none;background:none;border:none;padding:16px 8px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;font-family:inherit">
+      <div style="width:48px;height:48px;border-radius:14px;background:#e6f2ff;display:flex;align-items:center;justify-content:center;font-size:22px">📅</div>
+      <span style="font-size:11px;font-weight:600;color:#1d1d1f" id="mes-cal-l">Calendari</span>
+    </button>
+    <button onclick="goFromMes('sueno')" style="-webkit-appearance:none;background:none;border:none;padding:16px 8px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;font-family:inherit">
+      <div style="width:48px;height:48px;border-radius:14px;background:#f0ebff;display:flex;align-items:center;justify-content:center;font-size:22px">😴</div>
+      <span style="font-size:11px;font-weight:600;color:#1d1d1f" id="mes-sleep-l">Son</span>
+    </button>
+    <button onclick="goFromMes('competiciones')" style="-webkit-appearance:none;background:none;border:none;padding:16px 8px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;font-family:inherit">
+      <div style="width:48px;height:48px;border-radius:14px;background:#fff0e0;display:flex;align-items:center;justify-content:center;font-size:22px">🏆</div>
+      <span style="font-size:11px;font-weight:600;color:#1d1d1f" id="mes-comp-l">Competicions</span>
+    </button>
+    <button onclick="goFromMes('nutricion')" style="-webkit-appearance:none;background:none;border:none;padding:16px 8px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;font-family:inherit">
+      <div style="width:48px;height:48px;border-radius:14px;background:#e0f7ef;display:flex;align-items:center;justify-content:center;font-size:22px">🥗</div>
+      <span style="font-size:11px;font-weight:600;color:#1d1d1f" id="mes-nutri-l">Nutrició</span>
+    </button>
+    <button onclick="goFromMes('asistente')" style="-webkit-appearance:none;background:none;border:none;padding:16px 8px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;font-family:inherit">
+      <div style="width:48px;height:48px;border-radius:14px;background:#e6f2ff;display:flex;align-items:center;justify-content:center;font-size:22px">🤖</div>
+      <span style="font-size:11px;font-weight:600;color:#1d1d1f" id="mes-ai-l">Assistent IA</span>
+    </button>
+    <button onclick="goFromMes('telegram')" style="-webkit-appearance:none;background:none;border:none;padding:16px 8px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;font-family:inherit">
+      <div style="width:48px;height:48px;border-radius:14px;background:#e6f2ff;display:flex;align-items:center;justify-content:center;font-size:22px">✈️</div>
+      <span style="font-size:11px;font-weight:600;color:#1d1d1f" id="mes-tg-l">Telegram</span>
+    </button>
+    <button onclick="goFromMes('config')" style="-webkit-appearance:none;background:none;border:none;padding:16px 8px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;font-family:inherit">
+      <div style="width:48px;height:48px;border-radius:14px;background:#f5f5f7;display:flex;align-items:center;justify-content:center;font-size:22px">⚙️</div>
+      <span style="font-size:11px;font-weight:600;color:#1d1d1f" id="mes-cfg-l">Configuració</span>
+    </button>
+    <div></div>
+  </div>
+</div>
 
 </div><!-- end app -->
 
@@ -897,7 +938,34 @@ function setLang(l,btn){
   document.querySelectorAll('.lbtn').forEach(function(b){b.classList.remove('active')});
   btn.classList.add('active');
   document.documentElement.lang=l;
+  updateMesLabels();
+  updateBnLabels();
   if(CUR_SEC)renderSec(CUR_SEC);
+}
+function updateBnLabels(){
+  var li=L();
+  var bnLabels={
+    'bn-dash-l': li.t['Inici']||'Inici',
+    'bn-plan-l': li.t['Pla']||'Pla',
+    'bn-reg-l':  LANG==='en'?'Log':LANG==='es'?'Registrar':'Registrar',
+    'bn-prog-l': li.t['Progrés']||'Progrés',
+    'bn-mes-l':  LANG==='en'?'More':LANG==='es'?'Más':'Més',
+  };
+  Object.keys(bnLabels).forEach(function(id){var el=document.getElementById(id);if(el)el.textContent=bnLabels[id]});
+}
+function updateMesLabels(){
+  var li=L();
+  var mesLabels={
+    'mes-estado-l': LANG==='en'?'Fitness':LANG==='es'?'Forma':'Estat forma',
+    'mes-cal-l':    li.t['Calendari']||'Calendari',
+    'mes-sleep-l':  li.t['Son']||'Son',
+    'mes-comp-l':   li.t['Competicions']||'Competicions',
+    'mes-nutri-l':  li.t['Nutrició']||'Nutrició',
+    'mes-ai-l':     LANG==='en'?'AI Assistant':LANG==='es'?'Asistente IA':'Assistent IA',
+    'mes-tg-l':     'Telegram',
+    'mes-cfg-l':    li.t['Configuració']||'Configuració',
+  };
+  Object.keys(mesLabels).forEach(function(id){var el=document.getElementById(id);if(el)el.textContent=mesLabels[id]});
 }
 
 // ── Navigation ────────────────────────────────────────────
@@ -907,8 +975,14 @@ function go(id){
   document.querySelectorAll('.bn').forEach(function(b){b.classList.remove('active')});
   var sec=document.getElementById('sec-'+id);
   if(sec)sec.classList.add('active');
-  var bn=document.getElementById('bn-'+id);
-  if(bn)bn.classList.add('active');
+  var mainSecs=['dashboard','plan','registro','progresion'];
+  if(mainSecs.indexOf(id)>=0){
+    var bn=document.getElementById('bn-'+id);
+    if(bn)bn.classList.add('active');
+  } else {
+    var bn2=document.getElementById('bn-mes');
+    if(bn2)bn2.classList.add('active');
+  }
   CUR_SEC=id;
   renderSec(id);
 }
@@ -1354,6 +1428,43 @@ function schedulePlanUpdate(){
 }
 schedulePlanUpdate();
 
+// ── Més menu ─────────────────────────────────────────────
+function openMesMenu(){
+  document.getElementById('mes-bg').style.display='block';
+  document.getElementById('mes-sheet').style.display='block';
+}
+function closeMesMenu(){
+  document.getElementById('mes-bg').style.display='none';
+  document.getElementById('mes-sheet').style.display='none';
+}
+function goFromMes(id){
+  closeMesMenu();
+  go(id);
+  // Mark "més" button as active for sub-sections
+  document.querySelectorAll('.bn').forEach(function(b){b.classList.remove('active')});
+  document.getElementById('bn-mes').classList.add('active');
+}
+
+// Override go() to also handle bn-mes state
+var _origGo=go;
+function go(id){
+  document.querySelectorAll('.sec').forEach(function(s){s.classList.remove('active')});
+  document.querySelectorAll('.bn').forEach(function(b){b.classList.remove('active')});
+  var sec=document.getElementById('sec-'+id);
+  if(sec)sec.classList.add('active');
+  // Highlight correct bottom nav button
+  var mainSecs=['dashboard','plan','registro','progresion'];
+  if(mainSecs.indexOf(id)>=0){
+    var bn=document.getElementById('bn-'+id);
+    if(bn)bn.classList.add('active');
+  } else {
+    var bn2=document.getElementById('bn-mes');
+    if(bn2)bn2.classList.add('active');
+  }
+  CUR_SEC=id;
+  renderSec(id);
+}
+
 // ── Init ──────────────────────────────────────────────────
 document.getElementById('r-date').value=today();
 document.getElementById('bm-date').value=today();
@@ -1363,6 +1474,8 @@ document.getElementById('comp-date').value=today();
 // Set lang buttons
 document.querySelectorAll('.lbtn').forEach(function(b){b.classList.toggle('active',b.textContent===LANG.toUpperCase())});
 document.documentElement.lang=LANG;
+updateBnLabels();
+updateMesLabels();
 renderDash();
 </script>
 </body>
