@@ -5,7 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Aion Athletic">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#ffffff">
 <title>Aion Athletic</title>
+<link rel="manifest" href="data:application/json,{%22name%22:%22Aion+Athletic%22,%22short_name%22:%22Aion%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%23ffffff%22,%22theme_color%22:%22%23ffffff%22,%22icons%22:[{%22src%22:%22data:image/svg+xml,%3Csvg+xmlns=%27http://www.w3.org/2000/svg%27+viewBox=%270+0+100+100%27%3E%3Crect+width=%27100%27+height=%27100%27+rx=%2720%27+fill=%27%23cc0000%27/%3E%3Ctext+y=%27.9em%27+font-size=%2790%27%3E%E2%9A%A1%3C/text%3E%3C/svg%3E%22,%22sizes%22:%22any%22,%22type%22:%22image/svg+xml%22}]}">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;background:#f5f5f7;color:#1d1d1f;font-size:16px;-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%}
@@ -477,7 +481,7 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Helvetica Ne
         <textarea class="cinput" id="chat-input" rows="1" id="ai-ph" placeholder="Escriu la teva pregunta..."></textarea>
         <button class="csend" onclick="sendChat()">↑</button>
       </div>
-      <div style="font-size:10px;color:var(--t2);margin-top:5px" id="ai-key-note">Requereix API key a Configuració</div>
+      <div style="font-size:10px;color:var(--t2);margin-top:5px" id="ai-key-note">Requereix API key · <span id="ai-provider-badge" style="color:var(--swim);font-weight:600">Claude</span></div>
     </div>
   </div>
 </div>
@@ -533,9 +537,26 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Helvetica Ne
     <div class="fi"><label>VO2 Max</label><input type="number" id="cfg-vo2" placeholder="52"></div></div>
     <div class="fr" style="margin-top:10px"><div class="fi"><label id="cfg-week-l">Setmana actual</label><input type="number" id="cfg-week" placeholder="1" min="1" max="104"></div>
     <div class="fi"><label id="cfg-start-l">Inici del pla</label><input type="date" id="cfg-startdate"></div></div>
-    <div class="fr full" style="margin-top:10px"><div class="fi"><label id="cfg-api-l">API Key Anthropic (IA)</label><input type="password" id="cfg-apikey" placeholder="sk-ant-...">
-    <div style="font-size:11px;color:var(--t2);margin-top:4px" id="cfg-api-note">Per a l'assistent IA. Es desa només al teu dispositiu.</div></div></div>
-    <button class="btn bd" style="margin-top:14px;width:100%" id="cfg-save-btn" onclick="saveCfg()">Desar perfil</button>
+    <div class="fr full" style="margin-top:10px"><div class="fi"><label id="cfg-ai-l">Proveïdor d'IA</label>
+      <select id="cfg-ai-provider" onchange="onProviderChange()">
+        <option value="claude">🟣 Claude (Anthropic)</option>
+        <option value="gemini">🔵 Gemini (Google)</option>
+        <option value="openai">🟢 ChatGPT (OpenAI)</option>
+      </select></div></div>
+    <div id="ai-key-claude" class="fr full" style="margin-top:10px"><div class="fi"><label>API Key — Claude (Anthropic)</label><input type="password" id="cfg-apikey" placeholder="sk-ant-api03-...">
+      <div style="font-size:11px;color:var(--t2);margin-top:4px">Obtén-la a <a href="https://console.anthropic.com" style="color:var(--swim)" target="_blank">console.anthropic.com</a></div></div></div>
+    <div id="ai-key-gemini" class="fr full" style="margin-top:10px;display:none"><div class="fi"><label>API Key — Gemini (Google)</label><input type="password" id="cfg-geminikey" placeholder="AIza...">
+      <div style="font-size:11px;color:var(--t2);margin-top:4px">Obtén-la a <a href="https://aistudio.google.com/app/apikey" style="color:var(--swim)" target="_blank">aistudio.google.com</a></div></div></div>
+    <div id="ai-key-openai" class="fr full" style="margin-top:10px;display:none"><div class="fi"><label>API Key — ChatGPT (OpenAI)</label><input type="password" id="cfg-openaikey" placeholder="sk-proj-...">
+      <div style="font-size:11px;color:var(--t2);margin-top:4px">Obtén-la a <a href="https://platform.openai.com/api-keys" style="color:var(--swim)" target="_blank">platform.openai.com</a></div></div></div>
+    <div style="background:#f5f5f7;border-radius:10px;padding:10px 12px;margin-top:10px;font-size:11px;color:var(--t2);line-height:1.6">
+      🔒 Les API keys es desen <b style="color:#1d1d1f">només al teu dispositiu</b>. Mai es comparteixen ni s'envien a cap servidor extern.
+    </div>
+    <div id="garmin-profile-badge" style="display:none;align-items:center;gap:8px;font-size:12px;margin-top:12px;padding:10px 12px;background:#f0f6ff;border-radius:10px;border:1px solid #cce5ff"></div>
+    <div style="display:flex;gap:8px;margin-top:14px">
+      <button class="btn bd" style="flex:1" id="cfg-save-btn" onclick="saveCfg()">Desar perfil</button>
+      <button class="btn bg" id="cfg-garmin-sync-btn" onclick="syncProfileFromGarmin()" style="white-space:nowrap">🔵 Sync Garmin</button>
+    </div>
   </div>
   <div style="margin-bottom:2rem">
     <div class="sh" id="cfg-int-t">Integracions</div>
@@ -721,9 +742,16 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Helvetica Ne
 <div class="mbg" id="garmin-modal"><div class="modal">
   <div class="mti">Garmin Connect</div>
   <p style="font-size:13px;color:var(--t2);line-height:1.6;margin-bottom:14px" id="garmin-p">Registra una app a <a href="https://developer.garmin.com" style="color:var(--swim)">developer.garmin.com</a> per obtenir les credencials OAuth2.</p>
-  <div class="fr full"><div class="fi"><label>Consumer Key</label><input type="text" id="g-key" placeholder="El teu Consumer Key"></div></div>
-  <div class="fr full" style="margin-top:10px"><div class="fi"><label>Consumer Secret</label><input type="password" id="g-secret" placeholder="El teu Consumer Secret"></div></div>
-  <div style="background:#f5f5f7;border-radius:10px;padding:10px;margin-top:12px;font-size:12px;color:var(--t2);line-height:1.6" id="garmin-note"><b style="color:#1d1d1f">Sense API:</b> Exporta des de Garmin Connect → Activitats → Exportar CSV.</div>
+  <div class="fr full"><div class="fi"><label>Access Token</label><input type="text" id="g-token" placeholder="Token OAuth de Garmin Connect"><div style="font-size:11px;color:var(--t2);margin-top:4px">Obtingut al autoritzar l'app a developer.garmin.com</div></div></div>
+  <div class="fr full" style="margin-top:10px"><div class="fi"><label>Consumer Key (opcional)</label><input type="text" id="g-key" placeholder="El teu Consumer Key"></div></div>
+  <div class="fr full" style="margin-top:10px"><div class="fi"><label>Consumer Secret (opcional)</label><input type="password" id="g-secret" placeholder="El teu Consumer Secret"></div></div>
+  <div style="background:#f0f6ff;border-radius:10px;padding:12px;margin-top:12px;font-size:12px;color:var(--t2);line-height:1.7" id="garmin-note">
+    <b style="color:#1d1d1f">ℹ️ Com connectar Garmin:</b><br>
+    1. Ve a <a href="https://developer.garmin.com" style="color:var(--swim)">developer.garmin.com</a> → crea una app<br>
+    2. Autoritza amb OAuth2 i copia l'Access Token<br>
+    3. En connectar, el perfil s'importa automàticament<br><br>
+    <b style="color:#1d1d1f">Sense API:</b> Exporta des de Garmin Connect → Activitats → CSV i importa-ho manualment.
+  </div>
   <div class="mact">
     <button class="btn bg" onclick="closeM('garmin-modal')" id="gm-cancel-btn">Cancel·lar</button>
     <button class="btn bd" onclick="saveGarmin()" id="gm-save-btn">Desar</button>
@@ -758,7 +786,7 @@ function lsDel(k){try{localStorage.removeItem(k)}catch(e){delete _mem[k]}}
 
 // ── State ─────────────────────────────────────────────────
 var SK='aion_v3';
-var DEF={profile:{name:'',fcMax:'',fcRest:'',ftp:'',vo2max:'',targetRace:''},config:{week:1,apiKey:'',startDate:''},competitions:[],logs:[],bodyMetrics:[],sleepLog:[],healthDaily:[],plan:{},done:{},garmin:{},wahoo:{},telegram:{token:'',chatId:'',planTime:'07:00',statsTime:'06:30'},chatHistory:[]};
+var DEF={profile:{name:'',fcMax:'',fcRest:'',ftp:'',vo2max:'',targetRace:''},config:{week:1,apiKey:'',aiProvider:'claude',geminiKey:'',openaiKey:'',startDate:''},competitions:[],logs:[],bodyMetrics:[],sleepLog:[],healthDaily:[],plan:{},done:{},garmin:{},wahoo:{},telegram:{token:'',chatId:'',planTime:'07:00',statsTime:'06:30'},chatHistory:[]};
 var S=function(){try{var s=JSON.parse(lsGet(SK)||'{}');return deepMerge(JSON.parse(JSON.stringify(DEF)),s)}catch(e){return JSON.parse(JSON.stringify(DEF))}}();
 function deepMerge(t,s){for(var k in s){if(s[k]&&typeof s[k]==='object'&&!Array.isArray(s[k])){if(!t[k])t[k]={};deepMerge(t[k],s[k])}else t[k]=s[k]}return t}
 function save(){try{lsSet(SK,JSON.stringify(S))}catch(e){}}
@@ -847,7 +875,7 @@ var I18N={
     phaseObjs:{base:['2× natació/setmana','Rodatges bici Z2','Força 2×/setmana','Setmana recovery cada 4ª'],build:['Bricks setmanals','Blocs Z3 bici','12-14h/setmana','Test mitja dist. S24'],peak:['14-17h pics','Sortides bici 5-6h','Race pace swim','2 recovery dins'],taper:['Volum -40%','Intensitat puntual','Race sim S50','Dormir 9h/nit']},
   },
   es:{days:['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'],daysFull:['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'],months:['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'],phases:{base:'Base',build:'Build',peak:'Peak',taper:'Taper'},sports:{swim:'Natación',bike:'Ciclismo',run:'Carrera',brick:'Brick',strength:'Fuerza',stretch:'Estiramiento',rest:'Descanso',other:'Otro'},greetings:{morning:'Buenos días',afternoon:'Buenas tardes',evening:'Buenas noches'},
-    t:{'Dashboard':'Dashboard','Estat de forma':'Estado de forma','Pla setmanal':'Plan semanal','Calendari':'Calendario','Registrar sessió':'Registrar sesión','Progressió':'Progresión','Son':'Sueño','Competicions':'Competiciones','Nutrició':'Nutrición','Assistent IA':'Asistente IA','Telegram':'Telegram','Configuració':'Configuración','Inici':'Inicio','Pla':'Plan','Registrar':'Registrar','Progrés':'Progreso','Config':'Config','FC mitjana':'FC media','VO2 Max':'VO2 Max','Son':'Sueño','Passos avui':'Pasos hoy','passos':'pasos','Setmana pla':'Semana plan','Sessions ✓':'Sesiones ✓','planificades':'planificadas','Estat de forma actual':'Estado de forma actual','Detall →':'Detalle →','Entrenament d\'avui':'Entrenamiento de hoy','Pla →':'Plan →','Volum aquesta setmana':'Volumen esta semana','lpm avui':'lpm hoy','ml/kg/min':'ml/kg/min','puntuació':'puntuación','/100':'/100','Body Battery':'Body Battery','Estrès':'Estrés','Mesures corporals':'Medidas corporales','Son recent':'Sueño reciente','Veure →':'Ver todo →','Dades de salut diàries':'Datos de salud diarios','Toca per editar. La IA adapta al progrés.':'Toca para editar. La IA adapta al progreso.','Historial d\'entrenaments i competicions.':'Histórico de entrenamientos y competiciones.','Natació, bici i cursa s\'importen automàticament.':'Natación, bici y carrera se importan automáticamente.','Nova sessió manual':'Nueva sesión manual','Esport':'Deporte','Data':'Fecha','Durada (min)':'Duración (min)','Notes':'Notas','Netejar':'Limpiar','Desar sessió':'Guardar sesión','Recents':'Recientes','Evolució setmana a setmana.':'Evolución semana a semana.','Volum':'Volumen','Historial':'Historial','Fases':'Fases','Cos':'Cuerpo','Hores per esport — darreres 8 setmanes':'Horas por deporte — últimas 8 semanas','Total natació':'Total natación','Total ciclisme':'Total ciclismo','Total cursa':'Total carrera','Sessions':'Sesiones','Hores totals':'Horas totales','Ses. força':'Ses. fuerza','Totes les sessions':'Todas las sesiones','Selecciona una fase':'Selecciona una fase','Evolució pes i cintura':'Evolución peso y cintura','Qualitat del son i recuperació.':'Calidad del sueño y recuperación.','Durada mitjana':'Duración media','Puntuació':'Puntuación','Son profund':'Sueño profundo','7 nits':'7 noches','min/nit':'min/noche','Ironman, intermèdies i esdeveniments.':'Ironman, intermedias y eventos.','Pla orientatiu segons la teva càrrega d\'entrenament.':'Plan orientativo según tu carga de entrenamiento.','Avui':'Hoy','Setmana':'Semana','Race day':'Race day','Pregunta en llenguatge natural sobre el teu entrenament.':'Pregunta en lenguaje natural sobre tu entrenamiento.','La meva forma?':'¿Mi forma?','Demà':'Mañana','VO2max':'VO2max','Força avui':'Fuerza hoy','Requereix API key a Configuració':'Requiere API key en Configuración','Notificacions i consultes per Telegram.':'Notificaciones y consultas por Telegram.','Configuració del bot':'Configuración del bot','Token del bot':'Token del bot','Notificacions automàtiques':'Notificaciones automáticas','📅 Pla diari':'📅 Plan diario','Entrenament del dia cada matí':'Entreno del día cada mañana','🌅 Resum matinal':'🌅 Resumen matinal','FC, VO2max, son, passos':'FC, VO2max, sueño, pasos','Perfil, integracions i dades.':'Perfil, integraciones y datos.','Perfil de l\'atleta':'Perfil del atleta','Nom':'Nombre','Any de naixement':'Año de nacimiento','FC màxima (lpm)':'FC máxima (lpm)','FC repòs (lpm)':'FC reposo (lpm)','Setmana actual':'Semana actual','Inici del pla':'Inicio del plan','API Key Anthropic (IA)':'API Key Anthropic (IA)','Per a l\'assistent IA. Es desa només al teu dispositiu.':'Para el asistente IA. Se guarda solo en tu dispositivo.','Desar perfil':'Guardar perfil','Integracions':'Integraciones','FC, VO2max, son i mètriques de salut.':'FC, VO2max, sueño y métricas de salud.','Sessions d\'ELEMNT i Kickr.':'Sesiones de ELEMNT y Kickr.','Configurar':'Configurar','Dades':'Datos','Exportar dades':'Exportar datos','Backup JSON complet':'Backup JSON completo','Exportar':'Exportar','Importar dades':'Importar datos','Recuperar des de backup':'Recuperar desde backup','Importar':'Importar','Esborrar totes les dades':'Borrar todos los datos','Tipus':'Tipo','Descripció':'Descripción','Dia no disponible':'Día no disponible','✓ Completat':'✓ Completado','Cancel·lar':'Cancelar','Desar':'Guardar','Competició':'Competición','Prioritat':'Prioridad','Mesures corporals':'Medidas corporales','Pes (kg)':'Peso (kg)','Cintura (cm)':'Cintura (cm)','% Greix corporal':'% Grasa corporal','Registrar son':'Registrar sueño','Puntuació (1-100)':'Puntuación (1-100)','Son profund (min)':'Sueño profundo (min)','Desvetllaments (min)':'Despertares (min)','Dades de salut del dia':'Datos de salud del día','Passos':'Pasos','Estrès (/100)':'Estrés (/100)','setmanes restants':'semanas restantes','Setmana de cursa':'Semana de carrera','Fase ':'Fase ','restants':'restantes','Finalitzada':'Finalizada','Avui!':'¡Hoy!','Mètriques actuals de la teva condició física.':'Métricas actuales de tu condición física.','📤 Prova':'📤 Prueba','📅 Enviar pla':'📅 Enviar plan','📊 Enviar resum':'📊 Enviar resumen','Sense sessió avui':'Sin sesión hoy','Sense dades':'Sin datos','Sense registres':'Sin registros','Dia de descans. Recuperació activa.':'Día de descanso. Recuperación activa.','Desar i connectar':'Guardar y conectar','Nombre i data obligatoris':'Nombre y fecha obligatorios','Configura el bot primer':'Configura el bot primero','Missatge enviat':'Mensaje enviado','Pla enviat':'Plan enviado','Resum enviat':'Resumen enviado','Setmana copiada':'Semana copiada','Perfil desat':'Perfil guardado','Telegram desat':'Telegram guardado','Mesures desades':'Medidas guardadas','Son registrat':'Sueño registrado','Dades desades':'Datos guardados','Sessió desada':'Sesión guardada','Competició afegida':'Competición añadida','Afegeix el teu pes i cintura.':'Añade tu peso y cintura.','Afegeix el teu Ironman i carreres intermèdies.':'Añade tu Ironman y carreras intermedias.','Introdueix pes o cintura':'Introduce peso o cintura','Introdueix la durada':'Introduce la duración','Introdueix la durada de la sessió':'Introduce la duración de la sesión','Configura la API key a Configuració':'Configura la API key en Configuración','Adaptat amb IA':'Adaptado con IA','Exportar':'Exportar','Garmin desat':'Garmin guardado','Wahoo desat':'Wahoo guardado','Sense activitat.':'Sin actividad.','Esborrar?':'¿Borrar?','Esborrar sessió?':'¿Borrar esta sesión?','Esborrar TOTES les dades?':'¿Borrar TODOS los datos?','Dades importades':'Datos importados','Error llegint l\'arxiu':'Error al leer el archivo','Toca per editar. La IA adapta al progrés.':'Toca para editar. La IA adapta al progreso.','Sense dades encara':'Sin datos aún','Pocs dades':'Pocos datos','Afegeix almenys 2 registres.':'Añade al menos 2 registros.','Profund':'Profundo','Defineix la data del teu Ironman a Configuració':'Define la fecha de tu Ironman en Configuración','Configura la API key d\'Anthropic per habilitar l\'assistent IA':'Configura la API key de Anthropic para habilitar el asistente IA','Sense competicions':'Sin competiciones','Hola! Soc el teu assistent d\'entrenament.':'Hola! Soy tu asistente de entrenamiento. Pregúntame cualquier cosa.','Escriu la teva pregunta...':'Escribe tu pregunta...','+ Registrar':'+ Registrar','+ Manual':'+ Manual','+ Afegir':'+ Añadir','activitats':'actividades','Sincronitzant Garmin...':'Sincronizando Garmin...','Sincronitzant Wahoo...':'Sincronizando Wahoo...','Nat/bici/cursa auto-importat.':'Natación/bici/carrera se importan automáticamente.','Error':'Error','Mètriques de forma física i rendiment.':'Métricas de forma física y rendimiento.',
+    t:{'Dashboard':'Dashboard','Estat de forma':'Estado de forma','Pla setmanal':'Plan semanal','Calendari':'Calendario','Registrar sessió':'Registrar sesión','Progressió':'Progresión','Son':'Sueño','Competicions':'Competiciones','Nutrició':'Nutrición','Assistent IA':'Asistente IA','Telegram':'Telegram','Configuració':'Configuración','Inici':'Inicio','Pla':'Plan','Registrar':'Registrar','Progrés':'Progreso','Config':'Config','FC mitjana':'FC media','VO2 Max':'VO2 Max','Son':'Sueño','Passos avui':'Pasos hoy','passos':'pasos','Setmana pla':'Semana plan','Sessions ✓':'Sesiones ✓','planificades':'planificadas','Estat de forma actual':'Estado de forma actual','Detall →':'Detalle →','Entrenament d\'avui':'Entrenamiento de hoy','Pla →':'Plan →','Volum aquesta setmana':'Volumen esta semana','lpm avui':'lpm hoy','ml/kg/min':'ml/kg/min','puntuació':'puntuación','/100':'/100','Body Battery':'Body Battery','Estrès':'Estrés','Mesures corporals':'Medidas corporales','Son recent':'Sueño reciente','Veure →':'Ver todo →','Dades de salut diàries':'Datos de salud diarios','Toca per editar. La IA adapta al progrés.':'Toca para editar. La IA adapta al progreso.','Historial d\'entrenaments i competicions.':'Histórico de entrenamientos y competiciones.','Natació, bici i cursa s\'importen automàticament.':'Natación, bici y carrera se importan automáticamente.','Nova sessió manual':'Nueva sesión manual','Esport':'Deporte','Data':'Fecha','Durada (min)':'Duración (min)','Notes':'Notas','Netejar':'Limpiar','Desar sessió':'Guardar sesión','Recents':'Recientes','Evolució setmana a setmana.':'Evolución semana a semana.','Volum':'Volumen','Historial':'Historial','Fases':'Fases','Cos':'Cuerpo','Hores per esport — darreres 8 setmanes':'Horas por deporte — últimas 8 semanas','Total natació':'Total natación','Total ciclisme':'Total ciclismo','Total cursa':'Total carrera','Sessions':'Sesiones','Hores totals':'Horas totales','Ses. força':'Ses. fuerza','Totes les sessions':'Todas las sesiones','Selecciona una fase':'Selecciona una fase','Evolució pes i cintura':'Evolución peso y cintura','Qualitat del son i recuperació.':'Calidad del sueño y recuperación.','Durada mitjana':'Duración media','Puntuació':'Puntuación','Son profund':'Sueño profundo','7 nits':'7 noches','min/nit':'min/noche','Ironman, intermèdies i esdeveniments.':'Ironman, intermedias y eventos.','Pla orientatiu segons la teva càrrega d\'entrenament.':'Plan orientativo según tu carga de entrenamiento.','Avui':'Hoy','Setmana':'Semana','Race day':'Race day','Pregunta en llenguatge natural sobre el teu entrenament.':'Pregunta en lenguaje natural sobre tu entrenamiento.','La meva forma?':'¿Mi forma?','Demà':'Mañana','VO2max':'VO2max','Força avui':'Fuerza hoy','Requereix API key a Configuració':'Requiere API key en Configuración','Notificacions i consultes per Telegram.':'Notificaciones y consultas por Telegram.','Configuració del bot':'Configuración del bot','Token del bot':'Token del bot','Notificacions automàtiques':'Notificaciones automáticas','📅 Pla diari':'📅 Plan diario','Entrenament del dia cada matí':'Entreno del día cada mañana','🌅 Resum matinal':'🌅 Resumen matinal','FC, VO2max, son, passos':'FC, VO2max, sueño, pasos','Perfil, integracions i dades.':'Perfil, integraciones y datos.','Perfil de l\'atleta':'Perfil del atleta','Nom':'Nombre','Any de naixement':'Año de nacimiento','FC màxima (lpm)':'FC máxima (lpm)','FC repòs (lpm)':'FC reposo (lpm)','Setmana actual':'Semana actual','Inici del pla':'Inicio del plan','API Key Anthropic (IA)':'API Key Anthropic (IA)','Per a l\'assistent IA. Es desa només al teu dispositiu.':'Para el asistente IA. Se guarda solo en tu dispositivo.','Desar perfil':'Guardar perfil','Integracions':'Integraciones','FC, VO2max, son i mètriques de salut.':'FC, VO2max, sueño y métricas de salud.','Sessions d\'ELEMNT i Kickr.':'Sesiones de ELEMNT y Kickr.','Configurar':'Configurar','Dades':'Datos','Exportar dades':'Exportar datos','Backup JSON complet':'Backup JSON completo','Exportar':'Exportar','Importar dades':'Importar datos','Recuperar des de backup':'Recuperar desde backup','Importar':'Importar','Esborrar totes les dades':'Borrar todos los datos','Tipus':'Tipo','Descripció':'Descripción','Dia no disponible':'Día no disponible','✓ Completat':'✓ Completado','Cancel·lar':'Cancelar','Desar':'Guardar','Competició':'Competición','Prioritat':'Prioridad','Mesures corporals':'Medidas corporales','Pes (kg)':'Peso (kg)','Cintura (cm)':'Cintura (cm)','% Greix corporal':'% Grasa corporal','Registrar son':'Registrar sueño','Puntuació (1-100)':'Puntuación (1-100)','Son profund (min)':'Sueño profundo (min)','Desvetllaments (min)':'Despertares (min)','Dades de salut del dia':'Datos de salud del día','Passos':'Pasos','Estrès (/100)':'Estrés (/100)','setmanes restants':'semanas restantes','Setmana de cursa':'Semana de carrera','Fase ':'Fase ','restants':'restantes','Finalitzada':'Finalizada','Avui!':'¡Hoy!','Mètriques actuals de la teva condició física.':'Métricas actuales de tu condición física.','📤 Prova':'📤 Prueba','📅 Enviar pla':'📅 Enviar plan','📊 Enviar resum':'📊 Enviar resumen','Sense sessió avui':'Sin sesión hoy','Sense dades':'Sin datos','Sense registres':'Sin registros','Dia de descans. Recuperació activa.':'Día de descanso. Recuperación activa.','Desar i connectar':'Guardar y conectar','Nombre i data obligatoris':'Nombre y fecha obligatorios','Configura el bot primer':'Configura el bot primero','Missatge enviat':'Mensaje enviado','Pla enviat':'Plan enviado','Resum enviat':'Resumen enviado','Setmana copiada':'Semana copiada','Perfil desat':'Perfil guardado','Telegram desat':'Telegram guardado','Mesures desades':'Medidas guardadas','Son registrat':'Sueño registrado','Dades desades':'Datos guardados','Sessió desada':'Sesión guardada','Competició afegida':'Competición añadida','Afegeix el teu pes i cintura.':'Añade tu peso y cintura.','Afegeix el teu Ironman i carreres intermèdies.':'Añade tu Ironman y carreras intermedias.','Introdueix pes o cintura':'Introduce peso o cintura','Introdueix la durada':'Introduce la duración','Introdueix la durada de la sessió':'Introduce la duración de la sesión','Configura la API key a Configuració':'Configura la API key en Configuración','Adaptat amb IA':'Adaptado con IA','Exportar':'Exportar','Garmin desat':'Garmin guardado','Wahoo desat':'Wahoo guardado','Sense activitat.':'Sin actividad.','Esborrar?':'¿Borrar?','Esborrar sessió?':'¿Borrar esta sesión?','Esborrar TOTES les dades?':'¿Borrar TODOS los datos?','Dades importades':'Datos importados','Error llegint l\'arxiu':'Error al leer el archivo','Toca per editar. La IA adapta al progrés.':'Toca para editar. La IA adapta al progreso.','Sense dades encara':'Sin datos aún','Pocs dades':'Pocos datos','Afegeix almenys 2 registres.':'Añade al menos 2 registros.','Profund':'Profundo','Defineix la data del teu Ironman a Configuració':'Define la fecha de tu Ironman en Configuración','Configura la API key d\'Anthropic per habilitar l\'assistent IA':'Configura una API key de IA (Claude, Gemini o ChatGPT)','Sense competicions':'Sin competiciones','Hola! Soc el teu assistent d\'entrenament.':'Hola! Soy tu asistente de entrenamiento. Pregúntame cualquier cosa.','Escriu la teva pregunta...':'Escribe tu pregunta...','+ Registrar':'+ Registrar','+ Manual':'+ Manual','+ Afegir':'+ Añadir','activitats':'actividades','Sincronitzant Garmin...':'Sincronizando Garmin...','Sincronitzant Wahoo...':'Sincronizando Wahoo...','Nat/bici/cursa auto-importat.':'Natación/bici/carrera se importan automáticamente.','Error':'Error','Mètriques de forma física i rendiment.':'Métricas de forma física y rendimiento.',
     },
     phaseTips:{base:'🔵 Aeróbico de base. Z1-Z2. Construye el motor. 2 sesiones de fuerza/semana.',build:'🟢 Introduce Z3. Bricks semanales. 12-14h/semana.',peak:'🟡 Máximo volumen. Race pace. Salidas 5-6h bici.',taper:'🔴 Reduce volumen -40%/semana. Confía en el trabajo hecho.'},
     recTitles:{base:'Prioridad: base aeróbica',build:'Introduce bricks y tempo',peak:'Semana de carga alta',taper:'Modo taper: confía en el trabajo'},
@@ -866,7 +894,7 @@ var I18N={
     phaseObjs:{base:['2× natación/semana','Rodajes bici Z2','Fuerza 2×/semana','Semana recovery cada 4ª'],build:['Bricks semanales','Bloques Z3 bici','12-14h/semana','Test media dist. S24'],peak:['14-17h picos','Salidas bici 5-6h','Race pace swim','2 recovery dentro'],taper:['Volumen -40%','Intensidad puntual','Race sim S50','Dormir 9h/noche']},
   },
   en:{days:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],daysFull:['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'],months:['January','February','March','April','May','June','July','August','September','October','November','December'],phases:{base:'Base',build:'Build',peak:'Peak',taper:'Taper'},sports:{swim:'Swimming',bike:'Cycling',run:'Running',brick:'Brick',strength:'Strength',stretch:'Stretching',rest:'Rest',other:'Other'},greetings:{morning:'Good morning',afternoon:'Good afternoon',evening:'Good evening'},
-    t:{'Dashboard':'Dashboard','Estat de forma':'Fitness status','Pla setmanal':'Weekly plan','Calendari':'Calendar','Registrar sessió':'Log session','Progressió':'Progression','Son':'Sleep','Competicions':'Races','Nutrició':'Nutrition','Assistent IA':'AI Assistant','Telegram':'Telegram','Configuració':'Settings','Inici':'Home','Pla':'Plan','Registrar':'Log','Progrés':'Progress','Config':'Settings','FC mitjana':'Avg HR','VO2 Max':'VO2 Max','Son':'Sleep','Passos avui':'Steps today','passos':'steps','Setmana pla':'Plan week','Sessions ✓':'Sessions ✓','planificades':'planned','Estat de forma actual':'Current fitness status','Detall →':'Detail →','Entrenament d\'avui':'Today\'s training','Pla →':'Plan →','Volum aquesta setmana':'Volume this week','lpm avui':'bpm today','ml/kg/min':'ml/kg/min','puntuació':'score','/100':'/100','Body Battery':'Body Battery','Estrès':'Stress','Mesures corporals':'Body measurements','Son recent':'Recent sleep','Veure →':'View all →','Dades de salut diàries':'Daily health data','Toca per editar. La IA adapta al progrés.':'Tap to edit. AI adapts to your progress.','Historial d\'entrenaments i competicions.':'Training and race history.','Natació, bici i cursa s\'importen automàticament.':'Swim, bike and run are imported automatically.','Nova sessió manual':'New manual session','Esport':'Sport','Data':'Date','Durada (min)':'Duration (min)','Notes':'Notes','Netejar':'Clear','Desar sessió':'Save session','Recents':'Recent','Evolució setmana a setmana.':'Week by week evolution.','Volum':'Volume','Historial':'History','Fases':'Phases','Cos':'Body','Hores per esport — darreres 8 setmanes':'Hours by sport — last 8 weeks','Total natació':'Total swimming','Total ciclisme':'Total cycling','Total cursa':'Total running','Sessions':'Sessions','Hores totals':'Total hours','Ses. força':'Strength ses.','Totes les sessions':'All sessions','Selecciona una fase':'Select a phase','Evolució pes i cintura':'Weight & waist evolution','Qualitat del son i recuperació.':'Sleep quality and recovery.','Durada mitjana':'Average duration','Puntuació':'Score','Son profund':'Deep sleep','7 nits':'7 nights','min/nit':'min/night','Ironman, intermèdies i esdeveniments.':'Ironman, intermediate and events.','Pla orientatiu segons la teva càrrega d\'entrenament.':'Nutrition plan based on your training load.','Avui':'Today','Setmana':'Week','Race day':'Race day','Pregunta en llenguatge natural sobre el teu entrenament.':'Ask anything about your training in natural language.','La meva forma?':'My fitness?','Demà':'Tomorrow','VO2max':'VO2max','Força avui':'Strength today','Requereix API key a Configuració':'Requires API key in Settings','Notificacions i consultes per Telegram.':'Notifications and queries via Telegram.','Configuració del bot':'Bot configuration','Token del bot':'Bot token','Notificacions automàtiques':'Automatic notifications','📅 Pla diari':'📅 Daily plan','Entrenament del dia cada matí':'Daily training each morning','🌅 Resum matinal':'🌅 Morning summary','FC, VO2max, son, passos':'HR, VO2max, sleep, steps','Perfil, integracions i dades.':'Profile, integrations and data.','Perfil de l\'atleta':'Athlete profile','Nom':'Name','Any de naixement':'Birth year','FC màxima (lpm)':'Max HR (bpm)','FC repòs (lpm)':'Resting HR (bpm)','Setmana actual':'Current week','Inici del pla':'Plan start','API Key Anthropic (IA)':'Anthropic API Key (AI)','Per a l\'assistent IA. Es desa només al teu dispositiu.':'For the AI assistant. Stored only on your device.','Desar perfil':'Save profile','Integracions':'Integrations','FC, VO2max, son i mètriques de salut.':'HR, VO2max, sleep and health metrics.','Sessions d\'ELEMNT i Kickr.':'ELEMNT and Kickr sessions.','Configurar':'Configure','Dades':'Data','Exportar dades':'Export data','Backup JSON complet':'Full JSON backup','Exportar':'Export','Importar dades':'Import data','Recuperar des de backup':'Restore from backup','Importar':'Import','Esborrar totes les dades':'Delete all data','Tipus':'Type','Descripció':'Description','Dia no disponible':'Day unavailable','✓ Completat':'✓ Done','Cancel·lar':'Cancel','Desar':'Save','Competició':'Race','Prioritat':'Priority','Mesures corporals':'Body measurements','Pes (kg)':'Weight (kg)','Cintura (cm)':'Waist (cm)','% Greix corporal':'% Body fat','Registrar son':'Log sleep','Puntuació (1-100)':'Score (1-100)','Son profund (min)':'Deep sleep (min)','Desvetllaments (min)':'Awake (min)','Dades de salut del dia':'Daily health data','Passos':'Steps','Estrès (/100)':'Stress (/100)','setmanes restants':'weeks remaining','Setmana de cursa':'Race week','Fase ':'Phase ','restants':'remaining','Finalitzada':'Finished','Avui!':'Today!','Mètriques actuals de la teva condició física.':'Current physical condition metrics.','📤 Prova':'📤 Test','📅 Enviar pla':'📅 Send plan','📊 Enviar resum':'📊 Send summary','Sense sessió avui':'No session today','Sense dades':'No data','Sense registres':'No records','Dia de descans. Recuperació activa.':'Rest day. Active recovery.','Desar i connectar':'Save and connect','Nombre i data obligatoris':'Name and date required','Configura el bot primer':'Configure bot first','Missatge enviat':'Message sent','Pla enviat':'Plan sent','Resum enviat':'Summary sent','Setmana copiada':'Week copied','Perfil desat':'Profile saved','Telegram desat':'Telegram saved','Mesures desades':'Measurements saved','Son registrat':'Sleep recorded','Dades desades':'Data saved','Sessió desada':'Session saved','Competició afegida':'Race added','Afegeix el teu pes i cintura.':'Add your weight and waist.','Afegeix el teu Ironman i carreres intermèdies.':'Add your Ironman and intermediate races.','Introdueix pes o cintura':'Enter weight or waist','Introdueix la durada':'Enter duration','Introdueix la durada de la sessió':'Enter session duration','Configura la API key a Configuració':'Configure API key in Settings','Adaptat amb IA':'Adapted with AI','Exportar':'Export','Garmin desat':'Garmin saved','Wahoo desat':'Wahoo saved','Sense activitat.':'No activity.','Esborrar?':'Delete?','Esborrar sessió?':'Delete this session?','Esborrar TOTES les dades?':'Delete ALL data?','Dades importades':'Data imported','Error llegint l\'arxiu':'Error reading file','Toca per editar. La IA adapta al progrés.':'Tap to edit. AI adapts to your progress.','Sense dades encara':'No data yet','Pocs dades':'Too few data points','Afegeix almenys 2 registres.':'Add at least 2 records.','Profund':'Deep','Defineix la data del teu Ironman a Configuració':'Set your Ironman date in Settings','Configura la API key d\'Anthropic per habilitar l\'assistent IA':'Configure Anthropic API key to enable AI assistant','Sense competicions':'No races','Hola! Soc el teu assistent d\'entrenament.':'Hi! I\'m your training assistant. Ask me anything about your plan, progress or nutrition.','Escriu la teva pregunta...':'Type your question...','+ Registrar':'+ Record','+ Manual':'+ Manual','+ Afegir':'+ Add','activitats':'activities','Sincronitzant Garmin...':'Syncing Garmin...','Sincronitzant Wahoo...':'Syncing Wahoo...','Nat/bici/cursa auto-importat.':'Swim/bike/run auto-imported.','Error':'Error','Mètriques de forma física i rendiment.':'Fitness and performance metrics.',
+    t:{'Dashboard':'Dashboard','Estat de forma':'Fitness status','Pla setmanal':'Weekly plan','Calendari':'Calendar','Registrar sessió':'Log session','Progressió':'Progression','Son':'Sleep','Competicions':'Races','Nutrició':'Nutrition','Assistent IA':'AI Assistant','Telegram':'Telegram','Configuració':'Settings','Inici':'Home','Pla':'Plan','Registrar':'Log','Progrés':'Progress','Config':'Settings','FC mitjana':'Avg HR','VO2 Max':'VO2 Max','Son':'Sleep','Passos avui':'Steps today','passos':'steps','Setmana pla':'Plan week','Sessions ✓':'Sessions ✓','planificades':'planned','Estat de forma actual':'Current fitness status','Detall →':'Detail →','Entrenament d\'avui':'Today\'s training','Pla →':'Plan →','Volum aquesta setmana':'Volume this week','lpm avui':'bpm today','ml/kg/min':'ml/kg/min','puntuació':'score','/100':'/100','Body Battery':'Body Battery','Estrès':'Stress','Mesures corporals':'Body measurements','Son recent':'Recent sleep','Veure →':'View all →','Dades de salut diàries':'Daily health data','Toca per editar. La IA adapta al progrés.':'Tap to edit. AI adapts to your progress.','Historial d\'entrenaments i competicions.':'Training and race history.','Natació, bici i cursa s\'importen automàticament.':'Swim, bike and run are imported automatically.','Nova sessió manual':'New manual session','Esport':'Sport','Data':'Date','Durada (min)':'Duration (min)','Notes':'Notes','Netejar':'Clear','Desar sessió':'Save session','Recents':'Recent','Evolució setmana a setmana.':'Week by week evolution.','Volum':'Volume','Historial':'History','Fases':'Phases','Cos':'Body','Hores per esport — darreres 8 setmanes':'Hours by sport — last 8 weeks','Total natació':'Total swimming','Total ciclisme':'Total cycling','Total cursa':'Total running','Sessions':'Sessions','Hores totals':'Total hours','Ses. força':'Strength ses.','Totes les sessions':'All sessions','Selecciona una fase':'Select a phase','Evolució pes i cintura':'Weight & waist evolution','Qualitat del son i recuperació.':'Sleep quality and recovery.','Durada mitjana':'Average duration','Puntuació':'Score','Son profund':'Deep sleep','7 nits':'7 nights','min/nit':'min/night','Ironman, intermèdies i esdeveniments.':'Ironman, intermediate and events.','Pla orientatiu segons la teva càrrega d\'entrenament.':'Nutrition plan based on your training load.','Avui':'Today','Setmana':'Week','Race day':'Race day','Pregunta en llenguatge natural sobre el teu entrenament.':'Ask anything about your training in natural language.','La meva forma?':'My fitness?','Demà':'Tomorrow','VO2max':'VO2max','Força avui':'Strength today','Requereix API key a Configuració':'Requires API key in Settings','Notificacions i consultes per Telegram.':'Notifications and queries via Telegram.','Configuració del bot':'Bot configuration','Token del bot':'Bot token','Notificacions automàtiques':'Automatic notifications','📅 Pla diari':'📅 Daily plan','Entrenament del dia cada matí':'Daily training each morning','🌅 Resum matinal':'🌅 Morning summary','FC, VO2max, son, passos':'HR, VO2max, sleep, steps','Perfil, integracions i dades.':'Profile, integrations and data.','Perfil de l\'atleta':'Athlete profile','Nom':'Name','Any de naixement':'Birth year','FC màxima (lpm)':'Max HR (bpm)','FC repòs (lpm)':'Resting HR (bpm)','Setmana actual':'Current week','Inici del pla':'Plan start','API Key Anthropic (IA)':'Anthropic API Key (AI)','Per a l\'assistent IA. Es desa només al teu dispositiu.':'For the AI assistant. Stored only on your device.','Desar perfil':'Save profile','Integracions':'Integrations','FC, VO2max, son i mètriques de salut.':'HR, VO2max, sleep and health metrics.','Sessions d\'ELEMNT i Kickr.':'ELEMNT and Kickr sessions.','Configurar':'Configure','Dades':'Data','Exportar dades':'Export data','Backup JSON complet':'Full JSON backup','Exportar':'Export','Importar dades':'Import data','Recuperar des de backup':'Restore from backup','Importar':'Import','Esborrar totes les dades':'Delete all data','Tipus':'Type','Descripció':'Description','Dia no disponible':'Day unavailable','✓ Completat':'✓ Done','Cancel·lar':'Cancel','Desar':'Save','Competició':'Race','Prioritat':'Priority','Mesures corporals':'Body measurements','Pes (kg)':'Weight (kg)','Cintura (cm)':'Waist (cm)','% Greix corporal':'% Body fat','Registrar son':'Log sleep','Puntuació (1-100)':'Score (1-100)','Son profund (min)':'Deep sleep (min)','Desvetllaments (min)':'Awake (min)','Dades de salut del dia':'Daily health data','Passos':'Steps','Estrès (/100)':'Stress (/100)','setmanes restants':'weeks remaining','Setmana de cursa':'Race week','Fase ':'Phase ','restants':'remaining','Finalitzada':'Finished','Avui!':'Today!','Mètriques actuals de la teva condició física.':'Current physical condition metrics.','📤 Prova':'📤 Test','📅 Enviar pla':'📅 Send plan','📊 Enviar resum':'📊 Send summary','Sense sessió avui':'No session today','Sense dades':'No data','Sense registres':'No records','Dia de descans. Recuperació activa.':'Rest day. Active recovery.','Desar i connectar':'Save and connect','Nombre i data obligatoris':'Name and date required','Configura el bot primer':'Configure bot first','Missatge enviat':'Message sent','Pla enviat':'Plan sent','Resum enviat':'Summary sent','Setmana copiada':'Week copied','Perfil desat':'Profile saved','Telegram desat':'Telegram saved','Mesures desades':'Measurements saved','Son registrat':'Sleep recorded','Dades desades':'Data saved','Sessió desada':'Session saved','Competició afegida':'Race added','Afegeix el teu pes i cintura.':'Add your weight and waist.','Afegeix el teu Ironman i carreres intermèdies.':'Add your Ironman and intermediate races.','Introdueix pes o cintura':'Enter weight or waist','Introdueix la durada':'Enter duration','Introdueix la durada de la sessió':'Enter session duration','Configura la API key a Configuració':'Configure API key in Settings','Adaptat amb IA':'Adapted with AI','Exportar':'Export','Garmin desat':'Garmin saved','Wahoo desat':'Wahoo saved','Sense activitat.':'No activity.','Esborrar?':'Delete?','Esborrar sessió?':'Delete this session?','Esborrar TOTES les dades?':'Delete ALL data?','Dades importades':'Data imported','Error llegint l\'arxiu':'Error reading file','Toca per editar. La IA adapta al progrés.':'Tap to edit. AI adapts to your progress.','Sense dades encara':'No data yet','Pocs dades':'Too few data points','Afegeix almenys 2 registres.':'Add at least 2 records.','Profund':'Deep','Defineix la data del teu Ironman a Configuració':'Set your Ironman date in Settings','Configura la API key d\'Anthropic per habilitar l\'assistent IA':'Configure an AI API key (Claude, Gemini or ChatGPT)','Sense competicions':'No races','Hola! Soc el teu assistent d\'entrenament.':'Hi! I\'m your training assistant. Ask me anything about your plan, progress or nutrition.','Escriu la teva pregunta...':'Type your question...','+ Registrar':'+ Record','+ Manual':'+ Manual','+ Afegir':'+ Add','activitats':'activities','Sincronitzant Garmin...':'Syncing Garmin...','Sincronitzant Wahoo...':'Syncing Wahoo...','Nat/bici/cursa auto-importat.':'Swim/bike/run auto-imported.','Error':'Error','Mètriques de forma física i rendiment.':'Fitness and performance metrics.',
     },
     phaseTips:{base:'🔵 Aerobic base. Z1-Z2. Build the engine. 2 strength sessions/week.',build:'🟢 Introduce Z3. Weekly bricks. 12-14h/week.',peak:'🟡 Maximum volume. Race pace. 5-6h bike rides.',taper:'🔴 Reduce volume -40%/week. Trust the work done.'},
     recTitles:{base:'Priority: aerobic base',build:'Introduce bricks and tempo',peak:'High load week',taper:'Taper mode: trust the training'},
@@ -1140,19 +1168,102 @@ function chWeek(d){S.config.week=Math.max(1,Math.min(104,S.config.week+d));save(
 function markWeekDone(){for(var i=0;i<7;i++)S.done['w'+S.config.week+'d'+i]=true;save();renderPlan()}
 function copyNextWeek(){var src=getWeekPlan(S.config.week),nw=S.config.week+1;S.plan['w'+nw]=JSON.parse(JSON.stringify(src));save();toast(t('Setmana copiada')+' → S'+(nw))}
 function resetWeek(){delete S.plan['w'+S.config.week];save();renderPlan()}
+// ── Universal AI caller ──────────────────────────────────
+async function callAI(userMsg, systemPrompt, history){
+  var provider=S.config.aiProvider||'claude';
+  history=history||[];
+  
+  if(provider==='claude'){
+    var key=S.config.apiKey;
+    if(!key)throw new Error(t('Configura la API key a Configuració'));
+    var messages=[].concat(history).concat([{role:'user',content:userMsg}]);
+    var body={model:'claude-sonnet-4-20250514',max_tokens:1000};
+    if(systemPrompt)body.system=systemPrompt;
+    body.messages=messages;
+    var res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01'},
+      body:JSON.stringify(body)
+    });
+    if(!res.ok){var err=await res.json();throw new Error(err.error&&err.error.message||'Claude API error '+res.status)}
+    var data=await res.json();
+    return (data.content&&data.content[0]&&data.content[0].text)||'';
+    
+  } else if(provider==='gemini'){
+    var gkey=S.config.geminiKey;
+    if(!gkey)throw new Error(t('Configura la API key a Configuració')+' (Gemini)');
+    var gmsgs=[];
+    if(systemPrompt)gmsgs.push({role:'user',parts:[{text:'[Sistema]: '+systemPrompt}]},{role:'model',parts:[{text:'Entès. Ajudaré com a assistent d'entrenament.'}]});
+    history.forEach(function(m){gmsgs.push({role:m.role==='assistant'?'model':'user',parts:[{text:m.content}]})});
+    gmsgs.push({role:'user',parts:[{text:userMsg}]});
+    var gres=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key='+gkey,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({contents:gmsgs,generationConfig:{maxOutputTokens:1000,temperature:0.7}})
+    });
+    if(!gres.ok){var gerr=await gres.json();throw new Error(gerr.error&&gerr.error.message||'Gemini API error '+gres.status)}
+    var gdata=await gres.json();
+    return (gdata.candidates&&gdata.candidates[0]&&gdata.candidates[0].content&&gdata.candidates[0].content.parts&&gdata.candidates[0].content.parts[0]&&gdata.candidates[0].content.parts[0].text)||'';
+    
+  } else if(provider==='openai'){
+    var okey=S.config.openaiKey;
+    if(!okey)throw new Error(t('Configura la API key a Configuració')+' (OpenAI)');
+    var omsgs=[];
+    if(systemPrompt)omsgs.push({role:'system',content:systemPrompt});
+    history.forEach(function(m){omsgs.push({role:m.role==='assistant'?'assistant':'user',content:m.content})});
+    omsgs.push({role:'user',content:userMsg});
+    var ores=await fetch('https://api.openai.com/v1/chat/completions',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+okey},
+      body:JSON.stringify({model:'gpt-4o-mini',max_tokens:1000,messages:omsgs})
+    });
+    if(!ores.ok){var oerr=await ores.json();throw new Error(oerr.error&&oerr.error.message||'OpenAI API error '+ores.status)}
+    var odata=await ores.json();
+    return (odata.choices&&odata.choices[0]&&odata.choices[0].message&&odata.choices[0].message.content)||'';
+  }
+  throw new Error('Proveïdor d'IA no vàlid: '+provider);
+}
+
+function hasAIKey(){
+  var p=S.config.aiProvider||'claude';
+  if(p==='claude')return !!S.config.apiKey;
+  if(p==='gemini')return !!S.config.geminiKey;
+  if(p==='openai')return !!S.config.openaiKey;
+  return false;
+}
+
+function getAIProviderName(){
+  var p=S.config.aiProvider||'claude';
+  return p==='claude'?'Claude (Anthropic)':p==='gemini'?'Gemini (Google)':'ChatGPT (OpenAI)';
+}
+
+function onProviderChange(){
+  var v=document.getElementById('cfg-ai-provider');
+  if(!v)return;
+  var sel=v.value;
+  ['claude','gemini','openai'].forEach(function(p){
+    var el=document.getElementById('ai-key-'+p);
+    if(el)el.style.display=p===sel?'':'none';
+  });
+}
+
 async function adaptPlan(){
-  if(!S.config.apiKey){toast(t('Configura la API key a Configuració'));return}
-  toast('✦ IA...');
+  if(!hasAIKey()){toast(t('Configura la API key a Configuració')+' ('+getAIProviderName()+')');return}
+  toast('✦ IA ('+getAIProviderName()+')...');
   var w=S.config.week,phase=getPhase(w),li=L();
   var avail=[];for(var i=0;i<7;i++){var av=S.availability?S.availability[i]:{on:true,min:90};avail.push(li.days[i]+':'+(av&&av.on?av.min+'min':'off'))}
-  var prompt='Genera un pla d\'entrenament per setmana '+w+' (fase '+phase+'). Disponibilitat: '+avail.join(',')+'. Respon ONLY amb JSON: {"0":{sport,dur,zone,desc},...,"6":{...}}. Sports: swim/bike/run/brick/strength/stretch/rest. dur en minuts enters. Sense potenciòmetre.';
+  var h=latH(),sl=latSl(),body2=latBo();
+  var sysPrompt='Ets un entrenador de triatlons expert. L'atleta prepara un Ironman. Fase actual: '+phase+'. VO2max: '+((h&&h.vo2max)||S.profile.vo2max||'desconegut')+'. FC max: '+(S.profile.fcMax||'desconeguda')+'. Son: '+(sl&&sl.score?sl.score+'/100':'desconegut')+'. Pes: '+((body2&&body2.weight)||'desconegut')+'kg. Sense potenciometre.';
+  var prompt='Genera un pla entrenament setmana '+w+' (fase '+phase+'). Disponibilitat: '+avail.join(',')+'. Adapta intensitat a estat forma. Inclou forca i estirament. Respon UNICAMENT JSON sense text extra: {"0":{"sport":"swim","dur":60,"zone":"Z2","desc":"Tecnica"},...,"6":{...}}. sport: swim/bike/run/brick/strength/stretch/rest. dur minuts. zone: Z1/Z2/Z3/Z4/Z5 o buit.';
   try{
-    var res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':S.config.apiKey,'anthropic-version':'2023-06-01'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,messages:[{role:'user',content:prompt}]})});
-    var data=await res.json();
-    var txt=(data.content[0].text||'').replace(/```json|```/g,'').trim();
-    S.plan['w'+w]=JSON.parse(txt);save();renderPlan();toast('✓ '+t('Adaptat amb IA'));
+    var txt=await callAI(prompt,sysPrompt);
+    txt=txt.replace(/```json|```/g,'').trim();
+    var jsonMatch=txt.match(/\{[\s\S]*\}/);
+    if(jsonMatch)txt=jsonMatch[0];
+    S.plan['w'+w]=JSON.parse(txt);save();renderPlan();toast('✓ '+t('Adaptat amb IA')+' ('+getAIProviderName()+')');
   }catch(e){toast(t('Error')+': '+e.message)}
 }
+
 
 // ── CALENDAR ──────────────────────────────────────────────
 var calY=new Date().getFullYear(),calM=new Date().getMonth();
@@ -1211,6 +1322,8 @@ function getTip(sport){var tips={swim:['Treballa la posició horitzontal al aigu
 async function doSyncGarmin(){
   if(!S.garmin||!S.garmin.accessToken){openM('garmin-modal');return}
   toast(t('Sincronitzant Garmin...'));
+  // Also refresh profile data on every sync
+  fetchGarminProfile();
   var AUTO={'SWIMMING':'swim','OPEN_WATER_SWIMMING':'swim','CYCLING':'bike','ROAD_BIKING':'bike','MOUNTAIN_BIKING':'bike','INDOOR_CYCLING':'bike','RUNNING':'run','TRAIL_RUNNING':'run','TREADMILL_RUNNING':'run'};
   try{
     var since=Math.floor(Date.now()/1000)-(30*86400);
@@ -1353,12 +1466,15 @@ function renderChat(){
   var msgs=document.getElementById('chat-msgs');
   if(!msgs.children.length&&!S.chatHistory.length){msgs.innerHTML='<div class="msg mai"><div class="mbub">'+L().chatGreeting+'</div></div>'}
   else{msgs.innerHTML=S.chatHistory.map(function(m){return '<div class="msg '+(m.role==='user'?'muser':'mai')+'"><div class="mbub">'+m.content+'</div></div>'}).join('');msgs.scrollTop=msgs.scrollHeight}
+  // Update provider badge in chat
+  var badge=document.getElementById('ai-provider-badge');
+  if(badge){var p=S.config.aiProvider||'claude';badge.textContent=p==='claude'?'Claude':p==='gemini'?'Gemini':'ChatGPT'}
 }
 function quickChat(text){document.getElementById('chat-input').value=text;sendChat()}
 async function sendChat(){
   var input=document.getElementById('chat-input'),text=input.value.trim();
   if(!text)return;
-  if(!S.config.apiKey){toast(t('Configura la API key a Configuració'));return}
+  if(!hasAIKey()){toast(t('Configura la API key a Configuració')+' ('+getAIProviderName()+')');return}
   input.value='';
   S.chatHistory.push({role:'user',content:text,ts:Date.now()});
   var msgs=document.getElementById('chat-msgs');
@@ -1372,9 +1488,7 @@ async function sendChat(){
       'Setmana: '+S.config.week+'. Fase: '+getPhase(S.config.week)+'. '+
       'Respon en '+li.chatSysLang+', concís i útil. Sense potenciòmetre/vatios.';
     var messages=S.chatHistory.slice(-10).map(function(m){return {role:m.role,content:m.content}});
-    var res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':S.config.apiKey,'anthropic-version':'2023-06-01'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,system:sys,messages:messages})});
-    var data=await res.json();
-    var reply=(data.content&&data.content[0]&&data.content[0].text)||t('Error');
+    var reply=await callAI(text,sys,S.chatHistory.slice(-10,-1).map(function(m){return{role:m.role==='assistant'?'assistant':'user',content:m.content}}));
     S.chatHistory.push({role:'assistant',content:reply,ts:Date.now()});save();
     msgs.innerHTML=S.chatHistory.map(function(m){return '<div class="msg '+(m.role==='user'?'muser':'mai')+'"><div class="mbub">'+m.content+'</div></div>'}).join('');
     msgs.scrollTop=msgs.scrollHeight;
@@ -1397,16 +1511,107 @@ function loadCfg(){
   document.getElementById('cfg-ftp').value=p.ftp||'';document.getElementById('cfg-vo2').value=p.vo2max||'';
   document.getElementById('cfg-week').value=c.week||1;document.getElementById('cfg-startdate').value=c.startDate||'';
   document.getElementById('cfg-apikey').value=c.apiKey||'';
+  if(document.getElementById('cfg-geminikey'))document.getElementById('cfg-geminikey').value=c.geminiKey||'';
+  if(document.getElementById('cfg-openaikey'))document.getElementById('cfg-openaikey').value=c.openaiKey||'';
+  if(document.getElementById('cfg-ai-provider')){document.getElementById('cfg-ai-provider').value=c.aiProvider||'claude';onProviderChange();}
+  // Update Garmin sync status badge in profile section
+  var badge=document.getElementById('garmin-profile-badge');
+  if(badge){
+    if(S.garmin&&S.garmin.connected&&S.garmin.accessToken){
+      badge.innerHTML='<span style="color:var(--bike);font-weight:600">🔵 Garmin connectat</span>'+(S.garmin.lastSync?' · Última sync: '+fmtDate(S.garmin.lastSync.split('T')[0]):'');
+      badge.style.display='flex';
+    } else {
+      badge.innerHTML='<span style="color:var(--t2)">Garmin no connectat — <button class="btn bg bxs" onclick="openM('garmin-modal')">Connectar</button></span>';
+      badge.style.display='flex';
+    }
+  }
 }
+function syncProfileFromGarmin(){
+  if(!S.garmin||!S.garmin.accessToken){openM('garmin-modal');return}
+  toast('↻ Sincronitzant perfil de Garmin...');
+  fetchGarminProfile().then(function(){
+    loadCfg();
+    toast('✓ Perfil actualitzat des de Garmin');
+  }).catch(function(e){
+    toast('Error: '+e.message);
+  });
+}
+
 function saveCfg(){
   S.profile.name=document.getElementById('cfg-name').value;S.profile.birthYear=document.getElementById('cfg-birth').value;
   S.profile.fcMax=parseInt(document.getElementById('cfg-fcmax').value)||'';S.profile.fcRest=parseInt(document.getElementById('cfg-fcrest').value)||'';
   S.profile.ftp=parseInt(document.getElementById('cfg-ftp').value)||'';S.profile.vo2max=parseFloat(document.getElementById('cfg-vo2').value)||'';
   S.config.week=parseInt(document.getElementById('cfg-week').value)||1;S.config.startDate=document.getElementById('cfg-startdate').value;
   S.config.apiKey=document.getElementById('cfg-apikey').value.trim();
+  var provEl=document.getElementById('cfg-ai-provider');
+  var gemEl=document.getElementById('cfg-geminikey');
+  var oaiEl=document.getElementById('cfg-openaikey');
+  if(provEl)S.config.aiProvider=provEl.value;
+  if(gemEl)S.config.geminiKey=gemEl.value.trim();
+  if(oaiEl)S.config.openaiKey=oaiEl.value.trim();
   save();toast('✓ '+t('Perfil desat'));renderDash();
 }
-function saveGarmin(){if(!S.garmin)S.garmin={};S.garmin.clientId=document.getElementById('g-key').value;S.garmin.clientSecret=document.getElementById('g-secret').value;if(S.garmin.clientId)S.garmin.connected=true;save();closeM('garmin-modal');toast('✓ '+t('Garmin desat'))}
+function saveGarmin(){
+  if(!S.garmin)S.garmin={};
+  S.garmin.clientId=document.getElementById('g-key').value;
+  S.garmin.clientSecret=document.getElementById('g-secret').value;
+  S.garmin.accessToken=document.getElementById('g-token').value.trim();
+  if(S.garmin.clientId||S.garmin.accessToken)S.garmin.connected=true;
+  save();closeM('garmin-modal');
+  toast('✓ '+t('Garmin desat'));
+  if(S.garmin.accessToken){
+    toast('↻ Sincronitzant perfil de Garmin...');
+    fetchGarminProfile();
+  }
+}
+
+async function fetchGarminProfile(){
+  if(!S.garmin||!S.garmin.accessToken)return;
+  var hdr={'Authorization':'Bearer '+S.garmin.accessToken};
+  try{
+    // Fetch user profile from Garmin Connect API
+    var r=await fetch('https://apis.garmin.com/wellness-api/rest/user/profile',{headers:hdr});
+    if(r.ok){
+      var data=await r.json();
+      var changed=false;
+      // Name
+      if(data.displayName&&!S.profile.name){S.profile.name=data.displayName;changed=true}
+      // Birth year
+      if(data.birthYear&&!S.profile.birthYear){S.profile.birthYear=data.birthYear;changed=true}
+      // Gender
+      if(data.gender&&!S.profile.gender){S.profile.gender=data.gender;changed=true}
+      if(changed){save();if(CUR_SEC==='config')loadCfg();toast('✓ Perfil de Garmin importat');}
+    }
+    // Fetch biometrics (weight, height, FC max, VO2max)
+    var r2=await fetch('https://apis.garmin.com/wellness-api/rest/user/metrics',{headers:hdr});
+    if(r2.ok){
+      var m=await r2.json();
+      var changed2=false;
+      if(m.vo2Max&&!S.profile.vo2max){S.profile.vo2max=m.vo2Max;changed2=true}
+      if(m.maxHeartRate&&!S.profile.fcMax){S.profile.fcMax=m.maxHeartRate;changed2=true}
+      if(m.restingHeartRate&&!S.profile.fcRest){S.profile.fcRest=m.restingHeartRate;changed2=true}
+      if(changed2){save();if(CUR_SEC==='config')loadCfg()}
+    }
+    // Fetch latest body composition (weight, etc.)
+    var r3=await fetch('https://apis.garmin.com/wellness-api/rest/bodyComps?uploadStartTimeInSeconds='+(Math.floor(Date.now()/1000)-2592000)+'&uploadEndTimeInSeconds='+Math.floor(Date.now()/1000),{headers:hdr});
+    if(r3.ok){
+      var bc=await r3.json();
+      var latest=(bc.bodyComps||[]).sort(function(a,b){return b.measurementTimeInSeconds-a.measurementTimeInSeconds})[0];
+      if(latest){
+        var already=S.bodyMetrics.find(function(bm){return Math.abs(new Date(bm.date)-new Date(latest.measurementTimeInSeconds*1000))<86400000});
+        if(!already){
+          S.bodyMetrics.unshift({date:new Date(latest.measurementTimeInSeconds*1000).toISOString().split('T')[0],weight:latest.weight?Math.round(latest.weight*10)/10:null,bodyFat:latest.bodyFat||null,ts:Date.now(),source:'garmin'});
+          save();toast('✓ Pes importat de Garmin');
+        }
+      }
+    }
+    // Also fetch fitness age / VO2max from health data endpoint
+    var r4=await fetch('https://apis.garmin.com/wellness-api/rest/epochs?uploadStartTimeInSeconds='+(Math.floor(Date.now()/1000)-86400*7)+'&uploadEndTimeInSeconds='+Math.floor(Date.now()/1000),{headers:hdr});
+    // (epochs not needed, but keeping request pattern consistent)
+  }catch(e){
+    console.warn('Garmin profile fetch error:',e.message);
+  }
+}
 function saveWahoo(){if(!S.wahoo)S.wahoo={};S.wahoo.clientId=document.getElementById('w-clientid').value;S.wahoo.accessToken=document.getElementById('w-token').value;if(S.wahoo.accessToken)S.wahoo.connected=true;save();closeM('wahoo-modal');toast('✓ '+t('Wahoo desat'))}
 function saveBody(){var w=parseFloat(document.getElementById('bm-weight').value),wa=parseFloat(document.getElementById('bm-waist').value);if(!w&&!wa){toast(t('Introdueix pes o cintura'));return}S.bodyMetrics.unshift({date:document.getElementById('bm-date').value,weight:w||null,waist:wa||null,bodyFat:parseFloat(document.getElementById('bm-fat').value)||null,ts:Date.now()});save();closeM('body-modal');renderEstado();toast('✓ '+t('Mesures desades'))}
 function saveSleep(){var dur=parseInt(document.getElementById('sl-dur2').value);if(!dur){toast(t('Introdueix la durada'));return}S.sleepLog.unshift({date:document.getElementById('sl-date').value,duration:dur,score:parseInt(document.getElementById('sl-score2').value)||0,deepMin:parseInt(document.getElementById('sl-deep2').value)||0,remMin:parseInt(document.getElementById('sl-rem2').value)||0,awakeMin:parseInt(document.getElementById('sl-awake').value)||0,source:'manual'});save();closeM('sleep-modal');renderSueno();toast('✓ '+t('Son registrat'))}
@@ -1421,7 +1626,7 @@ function schedulePlanUpdate(){
   var now=new Date(),next2am=new Date(now.getFullYear(),now.getMonth(),now.getDate()+1,2,0,0);
   setTimeout(function(){
     var last=lsGet('aion_last_plan'),today2am=new Date(now.getFullYear(),now.getMonth(),now.getDate(),2,0,0);
-    if((!last||new Date(last)<today2am)&&S.config.apiKey){adaptPlan()}
+    if((!last||new Date(last)<today2am)&&hasAIKey()){adaptPlan()}
     lsSet('aion_last_plan',new Date().toISOString());
     schedulePlanUpdate();
   },next2am-now);
@@ -1476,6 +1681,8 @@ document.querySelectorAll('.lbtn').forEach(function(b){b.classList.toggle('activ
 document.documentElement.lang=LANG;
 updateBnLabels();
 updateMesLabels();
+// Set initial provider UI
+if(document.getElementById('cfg-ai-provider')&&S.config.aiProvider){document.getElementById('cfg-ai-provider').value=S.config.aiProvider;onProviderChange();}
 renderDash();
 </script>
 </body>
